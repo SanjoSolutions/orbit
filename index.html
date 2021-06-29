@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Orbit</title>
+
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<script>
+  const width = window.innerWidth
+  const height = window.innerHeight
+
+  const center = {
+    x: 0.5 * width,
+    y: 0.5 * height
+  }
+
+  const planet = {
+    x: center.x,
+    y: center.y,
+    radius: 100,
+    color: 'darkblue'
+  }
+
+  const orbit1 = {
+    x: center.x,
+    y: center.y,
+    radius: 120,
+    color: 'black'
+  }
+
+  const orbit2 = {
+    x: center.x,
+    y: center.y,
+    radius: 140,
+    color: 'black'
+  }
+
+  const orbits = [
+    orbit1,
+    orbit2
+  ]
+
+  const orbitingObject1 = {
+    orbit: orbit1,
+    angle: 0,
+    radius: 10,
+    color: 'black',
+    speed: 1
+  }
+
+  const orbitingObject2 = {
+    orbit: orbit2,
+    angle: 0,
+    radius: 5,
+    color: 'black',
+    speed: 0.5
+  }
+
+  const orbitingObjects = [
+    orbitingObject1,
+    orbitingObject2
+  ]
+
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  document.body.appendChild(canvas)
+  const context = canvas.getContext('2d')
+
+  function render() {
+    context.clearRect(0, 0, canvas.width, canvas.height)
+    renderObject(planet)
+    for (const orbit of orbits) {
+      renderOrbit(orbit)
+    }
+    for (const orbitingObject of orbitingObjects) {
+      renderOribitingObject(orbitingObject)
+    }
+  }
+
+  function renderObject(object) {
+    context.fillStyle = object.color
+    context.beginPath()
+    context.arc(object.x, object.y, object.radius, 0, 2 * Math.PI)
+    context.fill()
+  }
+
+  function renderOrbit(orbit) {
+    context.strokeStyle = orbit.color
+    context.beginPath()
+    context.arc(orbit.x, orbit.y, orbit.radius, 0, 2 * Math.PI)
+    context.stroke()
+  }
+
+  function renderOribitingObject(orbitingObject) {
+    const x = orbitingObject.orbit.x +
+      orbitingObject.orbit.radius * Math.cos(orbitingObject.angle)
+    const y = orbitingObject.orbit.y +
+      orbitingObject.orbit.radius * Math.sin(orbitingObject.angle)
+    renderObject({
+      ...orbitingObject,
+      x,
+      y
+    })
+  }
+
+  function onTick() {
+    for (const orbitingObject of orbitingObjects) {
+      orbitingObject.angle =
+        (orbitingObject.angle + orbitingObject.speed * (2 * Math.PI / 360))
+        % (2 * Math.PI)
+    }
+
+    render()
+    scheduleNextTick()
+  }
+
+  function scheduleNextTick() {
+    requestAnimationFrame(onTick)
+  }
+
+  scheduleNextTick()
+</script>
+</body>
+</html>
